@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+    
+    http://www.springframework.org/schema/security            
+    http://www.springframework.org/schema/security/spring-security-3.1.xsd            
+    http://www.springframework.org/schema/context             
+    http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+    >
+
+	<mvc:annotation-driven />
+	<context:component-scan base-package="com.edu.schoolT" />
+	<!-- <context:property-placeholder location="WEB-INF/sdrr.properties"/> 
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/school" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+		<property name="initialSize" value="1" />
+	
+		<property name="maxActive" value="2" />
+
+	</bean>
+
+	
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" /> 
+		<property name="configLocation">
+			<value>WEB-INF/hibernate.cfg.xml</value>
+		</property>
+		<property name="mappingLocations">
+			<list>
+				<value>WEB-INF/student_enrolled.hbm.xml</value>
+				<value>WEB-INF/student.hbm.xml</value>
+				<value>WEB-INF/user.hbm.xml</value>
+				<value>WEB-INF/authorityImpl.hbm.xml</value>
+				<value>WEB-INF/TestResult.hbm.xml</value>
+				<value>WEB-INF/test.hbm.xml</value>
+				<value>WEB-INF/subject.hbm.xml</value>
+				<value>WEB-INF/teacher.hbm.xml</value>
+				<value>WEB-INF/query.hbm.xml</value>
+				<value>WEB-INF/requestResponse.hbm.xml</value>
+				<value>WEB-INF/Activity.hbm.xml</value>
+				<value>WEB-INF/kaksha.hbm.xml</value>
+				<value>WEB-INF/Standard.hbm.xml</value>
+				<value>WEB-INF/Attendance.hbm.xml</value> 
+				<value>WEB-INF/StudentAttendance.hbm.xml</value>
+			</list>
+		</property>
+	</bean>-->
+
+
+
+	<!-- <bean id="userDetailsService" class="com.edu.schoolT.login.dao.impl.UserDetailsServiceDaoImpl" /> -->
+
+	<bean id="student" class="com.edu.schoolT.model.Student" />
+	<bean id="parent" class="com.edu.schoolT.model.Parent" /> 	
+	<bean id="address" class="com.edu.schoolT.model.Address" />	
+	<bean id="user" class="com.edu.schoolT.login.impl.User" />
+	<bean id="requestResponse" class ="com.edu.schoolT.model.RequestResponse"/>
+	<bean id="query" class ="com.edu.schoolT.model.Query">	
+	<property name ="requestResponseList">
+	<list><bean class ="com.edu.schoolT.model.RequestResponse"/>
+	</list>
+	</property>
+	</bean>
+		
+	<!-- <bean id="userDao" class="com.edu.schoolT.login.dao.impl.UserDaoImpl" /> -->
+			
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+	<property name="host" value="smtp.gmail.com" />
+	<property name="port" value="587" />
+	<property name="username" value="vikas2453" />
+	<property name="password" value="vanshmad@1" />
+	
+	<property name="javaMailProperties">
+	   <props>
+       	      <prop key="mail.smtp.auth">true</prop>
+       	      <prop key="mail.smtp.starttls.enable">true</prop>
+       	   </props>
+	</property>
+	</bean>
+	
+	<!-- for photo upload -->
+	<!-- <bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver" /> -->		   
+	
+		
+	
+	<aop:config>
+<!-- 	<aop:aspect ref="user">
+	<aop:after pointcut="execution(* com.edu.schoolT.web.StudentEnrollmentController.processValidatinForm(..))" method="takeSeats"/>
+	</aop:aspect> -->
+	
+	<aop:aspect ref="schoolEmail">
+	<!-- <aop:after pointcut="execution(* com.edu.schoolT.dao.impl.StundentDaoImpl.getStudent(..)) and args()" method="sendMail"/> -->
+	<aop:pointcut id="confirmationEmail" expression="execution(* com.edu.schoolT.web.StudentEnrollmentController.processValidatinForm(..)) and args(student, result, model)" />
+	<aop:after pointcut-ref="confirmationEmail" method="sendRegistrationMail" arg-names="student, result, model"/> 
+	</aop:aspect>
+	</aop:config>
+	 
+	
+<!-- <bean id="txManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+  <property name="sessionFactory" ref="sessionFactory" />
+</bean>
+
+<aop:config>
+  <aop:pointcut id="fooServiceOperation" expression="execution(* com.edu.schoolT.web.StudentEnrollmentController.*(..))"/>  
+  <aop:advisor advice-ref="txAdvice" pointcut-ref="fooServiceOperation"/>
+</aop:config>  
+
+ 
+ <aop:config>
+    <aop:pointcut id="UserDetailsService" expression="execution(* com.edu.schoolT.login.dao.impl.UserDaoImpl.*(..))"/>
+  <aop:advisor advice-ref="txDAOAdvice" pointcut-ref="UserDetailsService"/>
+ </aop:config>
+ 
+  <aop:config>
+    <aop:pointcut id="KakshaService" expression="execution(* com.edu.schoolT.web.KakshaController.*(..))"/>
+  <aop:advisor advice-ref="kakshaDAOAdvice" pointcut-ref="KakshaService"/>
+ </aop:config>
+
+the transactional advice (what 'happens'; see the <aop:advisor/> bean below)
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+  the transactional semantics...
+  <tx:attributes>
+    all methods starting with 'get' are read-only
+    <tx:method name="get*" read-only="true"/> 
+    other methods use the default transaction settings (see below)
+    <tx:method name="homeAdmitStudent" />
+    <tx:method name="admitStudent" />
+    <tx:method name="enrollStudent" />    
+  </tx:attributes>
+  </tx:advice>
+  
+  <tx:advice id="txDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  <tx:method name="*" />  
+  </tx:attributes>
+  </tx:advice>  
+  
+  <tx:advice id="kakshaDAOAdvice" transaction-manager="txManager">
+  the transactional semantics...
+  <tx:attributes>
+    all methods starting with 'get' are read-only
+    <tx:method name="get*" read-only="true"/> 
+    other methods use the default transaction settings (see below)
+    <tx:method name="*" />
+    </tx:attributes>
+  </tx:advice>
+  
+   
+   <aop:config>
+    <aop:pointcut id="teacherPointcut" expression="execution(* com.edu.schoolT.web.TeacherController.*(..))"/>
+  <aop:advisor advice-ref="teacherDAOAdvice" pointcut-ref="teacherPointcut"/>
+ </aop:config>
+ 
+   <tx:advice id="teacherDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="*" />  	
+  </tx:attributes>
+  </tx:advice>
+  
+   <aop:config>
+    <aop:pointcut id="queryPointcut" expression="execution(* com.edu.schoolT.web.QueryController.*(..))"/>
+  <aop:advisor advice-ref="QueryDAOAdvice" pointcut-ref="queryPointcut"/>
+ </aop:config>
+ 
+   <tx:advice id="QueryDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="*" /> 	     	
+  </tx:attributes>
+  </tx:advice>  
+  
+   <aop:config>
+    <aop:pointcut id="parentPointcut" expression="execution(* com.edu.schoolT.web.ParentController.*(..))"/>
+  <aop:advisor advice-ref="parentDAOAdvice" pointcut-ref="parentPointcut"/>
+ </aop:config>
+ 
+   <tx:advice id="parentDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="*" />  	 	     	
+  </tx:attributes>
+  </tx:advice>
+  
+   <tx:advice id="atendanceDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="*" />  	 	     	
+  </tx:attributes>
+  </tx:advice>
+  
+  <aop:config>
+    <aop:pointcut id="attendancePointcut" expression="execution(* com.edu.schoolT.web.AttendenceConroller.*(..))"/>
+  <aop:advisor advice-ref="atendanceDAOAdvice" pointcut-ref="attendancePointcut"/>
+ </aop:config>
+ 
+  
+  <aop:config>
+    <aop:pointcut id="ActivityPointcut" expression="execution(* com.edu.schoolT.web.ActivityController.*(..))"/>
+  <aop:advisor advice-ref="ActivityDAOAdvice" pointcut-ref="ActivityPointcut"/>
+ </aop:config>
+ 
+   <tx:advice id="ActivityDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="createActivity" />  	     	
+  </tx:attributes>
+  </tx:advice>
+  
+  <aop:config>
+    <aop:pointcut id="TeacherHomePointcut" expression="execution(* com.edu.schoolT.web.TeacherHomeController.*(..))"/>
+  <aop:advisor advice-ref="teacherDAOAdvice" pointcut-ref="TeacherHomePointcut"/>
+ </aop:config>
+ 
+ 
+ <aop:config>
+    <aop:pointcut id="AddressPointcut" expression="execution(* com.edu.schoolT.web.AddressController.*(..))"/>
+  <aop:advisor advice-ref="AddressDAOAdvice" pointcut-ref="AddressPointcut"/>
+ </aop:config>
+ 
+   <tx:advice id="AddressDAOAdvice" transaction-manager="txManager">
+  <tx:attributes>
+  	<tx:method name="*" />  	     	
+  </tx:attributes>
+  </tx:advice>
+  
+ --> 
+ 
+ 
+ 	<!-- <http use-expressions="true" auto-config="true">
+		<intercept-url pattern="/adminHome*" access="hasRole('ROLE_admin')"/>
+		<intercept-url pattern="/parentHome*" access="hasRole('ROLE_parent')"/>
+		<intercept-url pattern="/teacherHome*" access="hasRole('ROLE_teacher')"/>
+		<intercept-url pattern="/parent/*" access="hasRole('ROLE_parent')"/>
+		<intercept-url pattern="/teacher/*" access="hasRole('ROLE_teacher')"/>
+		Patterns where we are sending forms in the form of restful
+		<intercept-url pattern="/query.htm*" access="hasRole('ROLE_parent')"/>
+		<intercept-url pattern="/fetchQueryDetails.htm" access="isAuthenticated()"/>
+		
+		  <intercept-url pattern="/enrollment*" access="hasRole('ROLE_teacher')"/>
+		<form-login login-page="/login.htm" default-target-url="/roleHome.htm"
+			authentication-failure-url="/loginfailed.htm" />
+			<logout logout-success-url="/login.htm" />
+		<logout invalidate-session="true" logout-success-url="/Representation/home.jsp" logout-url="/logout" />
+	</http>
+	
+  
+ 
+ <bean class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" id="passwordEncoder"/>
+<bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/> -->
+
+
+
+ 
+ <!-- <beans:bean id="userDetailsService" class="com.edu.schoolT.login.dao.impl.UserDetailsServiceDaoImpl">
+ 	<beans:property name="sessionFactory" ref="sessionFactory"/>
+ 	</beans:bean>
+  -->
+  
+  <bean id="userDao" class="com.edu.schoolT.login.dao.impl.UserDaoImpl">
+ 	<!-- <beans:property name="sessionFactory" ref="sessionFactory"/> -->
+ 	</bean>
+  
+ 
+ 
+ 
+<!-- 	<authentication-manager>
+	  <authentication-provider user-service-ref="userDao">
+	  <password-encoder ref="encoder"/> 
+	  </authentication-provider>
+	</authentication-manager> -->
+      
+ 
+</beans>

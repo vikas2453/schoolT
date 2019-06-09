@@ -1,0 +1,6 @@
+com\edu\schoolT\dao\StudentEnrolledDaoIntegrationTest.class
+com\edu\schoolT\login\dao\impl\UserDetailsServiceTest.class
+com\edu\schoolT\web\StudentEnrollmentControllerTest.class
+com\edu\schoolT\dao\SchoolDaoIntegrationTest.class
+com\edu\schoolT\AppTest.class
+com\edu\schoolT\web\StudentEnrollmentControllerIntegrationTest.class
